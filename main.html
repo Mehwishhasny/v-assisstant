@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Virtual AI Assistant</title>
+</head>
+<body>
+  <h1>🎤 Virtual AI Assistant</h1>
+
+  <button onclick="startListening()">Start Speaking</button>
+  <button id="stopSpeaking">Stop</button>
+  <button id="clearText">Clear</button>
+
+  <br><br>
+
+  <label for="customQuestion">Ask me anything!</label>
+  <select id="customQuestion">
+    <option value="">-- Select a question --</option>
+  </select>
+  <button onclick="askCustomQuestion()">Ask</button>
+
+  <p id="transcript">You said: ...</p>
+  <p id="response">Assistant: ...</p>
+
+  <h3>🕘 Previous Q&A</h3>
+  <ul id="history"></ul>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
