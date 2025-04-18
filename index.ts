@@ -60,9 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
-
-
 // Initially hide the question section
 function hideQuestionSection() {
   const section = document.getElementById('question-section');
