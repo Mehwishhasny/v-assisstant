@@ -17,6 +17,24 @@ const sendBtn = document.getElementById('sendBtn');
 const pauseBtn = document.getElementById('pauseSpeaking');
 const resumeBtn = document.getElementById('resumeSpeaking');
 const assistantImg = document.getElementById('assistantImg');
+document.addEventListener('DOMContentLoaded', () => {
+    hideQuestionSection();
+    window.showQuestionSection = showQuestionSection;
+    // Auto-detect browser language
+    const browserLang = navigator.language || navigator.languages[0];
+    const detectedLang = browserLang.startsWith('ar') ? 'ar' :
+        browserLang.startsWith('ru') ? 'ru' : 'en';
+    // Update language select
+    languageSelect.value = detectedLang;
+    selectedLanguage = detectedLang;
+    // Re-initialize question section
+    const defaultSegment = document.querySelector('.segment[data-category="mortgage"]');
+    if (defaultSegment) {
+        defaultSegment.classList.add('active');
+        populateDropdown('mortgage');
+        showQuestionSection();
+    }
+});
 // Initially hide the question section
 function hideQuestionSection() {
     const section = document.getElementById('question-section');
@@ -275,6 +293,53 @@ async function getGeminiResponse(userText) {
     responseEl.textContent = `Assistant: ${reply}`;
     speak(reply);
     addToHistory(userText, reply);
+    async function getGeminiResponse(userText) {
+        speechSynthesis.cancel();
+        const lowerText = userText.toLowerCase();
+        // Check for predefined answer
+        for (const category in segmentedQuestions) {
+            const questions = segmentedQuestions[category][selectedLanguage];
+            for (const q in questions) {
+                if (userText.trim() === q.trim()) {
+                    const reply = questions[q];
+                    responseEl.textContent = `Assistant: ${reply}`;
+                    speak(reply);
+                    addToHistory(userText, reply);
+                    return;
+                }
+            }
+        }
+        // Gemini API call if not found in segmented questions
+        const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const requestBody = {
+            contents: [
+                {
+                    parts: [
+                        {
+                            text: "Answer concisely and precisely, like a helpful assistant. Only provide answers that are relevant to the UAE market. Do not include information unrelated to the UAE."
+                        },
+                        { text: userText }
+                    ]
+                }
+            ]
+        };
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+            const data = await response.json();
+            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't find a suitable answer.";
+            responseEl.textContent = `Assistant: ${reply}`;
+            speak(reply);
+            addToHistory(userText, reply);
+        }
+        catch (error) {
+            console.error("Error fetching Gemini response:", error);
+            responseEl.textContent = "Sorry, something went wrong while fetching the response.";
+        }
+    }
 }
 // Speak response text
 function speak(text) {
