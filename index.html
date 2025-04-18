@@ -2,29 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Virtual AI Assistant</title>
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-  <h1>🎤 Virtual AI Assistant</h1>
 
-  <button onclick="startListening()">Start Speaking</button>
-  <button id="stopSpeaking">Stop</button>
-  <button id="clearText">Clear</button>
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="text" id="loginId" placeholder="Enter ID" />
+    <input type="password" id="loginPassword" placeholder="Enter Password" />
+    <button onclick="login()">Login</button>
+    <p class="error" id="errorMsg"></p>
+  </div>
 
-  <br><br>
-
-  <label for="customQuestion">Ask me anything!</label>
-  <select id="customQuestion">
-    <option value="">-- Select a question --</option>
-  </select>
-  <button onclick="askCustomQuestion()">Ask</button>
-
-  <p id="transcript">You said: ...</p>
-  <p id="response">Assistant: ...</p>
-
-  <h3>🕘 Previous Q&A</h3>
-  <ul id="history"></ul>
-
-  <script type="module" src="./index.js"></script>
+  <script src="login.js"></script>
 </body>
 </html>
