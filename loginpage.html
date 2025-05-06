@@ -11,8 +11,7 @@
       window.location.href = "index.html"; // go back to login if not logged in
     }
   </script>
-  
-  
+
   <div class="destination">
     <div class="image-container">
       <img src="./images/waterfront-light-bay-water-dusk.jpg" />
@@ -32,6 +31,7 @@
     </div>
   </div>
 
+
   <div class="content">
     <div class="main">
       <div class="logo">
@@ -40,6 +40,9 @@
       <h1 class="main-heading">AI Assistant</h1>
     </div>
 
+
+    <div class="content-layout">
+      <div class="left-panel">
     <!-- Language Selector -->
     <div class="language-selector">
       <label for="languageSelect">Language:</label>
@@ -49,47 +52,62 @@
         <option value="ru">Русский</option>
       </select>
     </div>
-
+<br   /> <br   />
     <div class="btn">
-      <button onclick="startListening()">Start Speaking</button>
+      <button onclick="startListening()" class="speak-btn">Start Speaking</button>
       <button id="pauseSpeaking">Pause</button>
       <button id="resumeSpeaking">Resume</button>
-      <button id="clearText">Clear</button>
+      <button id="clearText" class="clear-btn">Clear</button>
     </div>
 
     <br><br>
     <div class="segment-buttons">
-      <button class="segment" onclick="handleSegmentClick(this)" data-category="mortgage">Mortgage</button>
-      <button class="segment" onclick="handleSegmentClick(this)" data-category="auto">Auto Loan</button>
-      <button class="segment" onclick="handleSegmentClick(this)" data-category="company">Company Formation</button>
-      <button class="segment" onclick="handleSegmentClick(this)" data-category="general">General</button>
+
+      <div class="segment-buttons">
+        <button class="segment" onclick="handleSegmentClick(this)" data-category="mortgage">Mortgage</button>
+        <button class="segment" onclick="handleSegmentClick(this)" data-category="auto">Auto Loan</button>
+        <button class="segment" onclick="handleSegmentClick(this)" data-category="company">Company Formation</button>
+        <button class="segment" onclick="handleSegmentClick(this)" data-category="general">General</button>
+      </div>
+
+      
     </div>
     
     <div id="question-section" style="display: none;">
       <label for="customQuestion">Ask a question:</label>
-      <select id="customQuestion">
+      <select id="customQuestion" style="width: 100%; max-width: 300px; margin-top: 12px; cursor: pointer; padding:4px;">
         <option value="">Select a question</option>
       </select>
-      <button id="askQuestionBtn">🔄 Load Questions</button>
       <button onclick="askCustomQuestion()">Ask</button>
+
+            
+      <div id="faq" style="display: none; margin-top: 20px;">
+        <h5 id="faq-title"></h5>
+        <p id="faq-content"></p>
+      </div>
+          <!-- Hide for now -->
+      <button id="askQuestionBtn" style="display: none">🔄 Load Questions</button>
     </div>
     
 
-    <br><br>
-  
-    
+    <br>
+       <!-- Hide for now -->
+    <input type="text" id="textInput" placeholder="Type your question..." style="display: none;"/>
+    <button id="sendBtn" style="display: none;">Send</button>
+    </div>
+    <div>
+      <iframe src="https://chatbot-roan-mu.vercel.app/">
+      </iframe>
+    </div>
 
-    <input type="text" id="textInput" placeholder="Type your question..." />
-    <button id="sendBtn">Send</button>
-
-    <p id="transcript">You said: ...</p>
-    <p id="response">Assistant: ...</p>
-
-    <h3>🕘 Discussion Thread</h3>
-    <ul id="history"></ul>
-
-   <!--<a href="/files/briefing.pptx" download>📥 Download Briefing (PowerPoint)</a>-->
+    <div class="right-panel discussion">
+      <h3>🕘Discussion Thread</h3>
+      <ul id="history" class="scrollable-thread"></ul>
+      <p id="transcript"></p>
+      <p id="response"></p>
+    </div>
   </div>
+</div>
 
   <script type="module" src="./index.js"></script>
 </body>

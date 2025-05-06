@@ -6,13 +6,23 @@
   <link rel="stylesheet" href="login.css">
 </head>
 <body>
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="./videos/background.mp4" type="video/mp4" />
+    Your browser does not support HTML5 videos.
+  </video>
+<div id="login-main">
+
+  <div class="logo">
+    <img src="./images/WhatsApp Image 2025-04-11 at 2.14.49 PM.jpeg" alt="logo"/>
+  </div>  
 
   <div class="login-box">
-    <h2>Login</h2>
+    <h2>Log In</h2>
     <input type="text" id="loginId" placeholder="Enter ID" />
     <input type="password" id="loginPassword" placeholder="Enter Password" />
     <button onclick="login()">Login</button>
     <p class="error" id="errorMsg"></p>
+  </div>
   </div>
 
   <script src="login.js"></script>

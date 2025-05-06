@@ -54,6 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
     hideQuestionSection();
     window.showQuestionSection = showQuestionSection;
 });
+function hideFaq() {
+    const section = document.getElementById('faq');
+    if (section) {
+        section.style.display = 'none'; // Hide it by default
+    }
+}
+function showFaq() {
+    const section = document.getElementById('faq');
+    if (section) {
+        section.style.display = 'block'; // Always show
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    hideFaq();
+    window.showFaq = showFaq;
+});
 // Gemini API key
 const apiKey = 'AIzaSyBi2OE2UNv5s5-YMdZFaH4Z_XLUn8aSLVo';
 const segmentedQuestions = {
@@ -63,7 +79,7 @@ const segmentedQuestions = {
             "To whom I get connect to for mortgage?": "You should speak to a mortgage advisor or financial institution.",
             "How many mortgages can I apply for in UAE?": "You may apply for multiple, but approval depends on eligibility.",
             "What are the mortgage benefits for the UAE residents?": "Residents will get 1.Lower Interest Rates. 2. Residents typically receive rates of 3% to 4%, while non-residents face 4.5% to 6%. 3. Higher Loan-to-Value Ratios Up to 80% forresidents vs. 50% to 60% for non-residents. 4. Faster Approval Processes, Banks favor residents for quicker approvals.",
-            "If someone is employed and got a mortgage in the UAE, paying installments but he receives a good offer overseas and wants to go outside the UAE. Then how bank takes care of such cases?": "1.He can maintain installments regularly through ur payment account. 2.He can maintain installments regularly through ur payment account.",
+            "An employeed person got a mortgage, paying installments but receives a good offer and wants to go outside the UAE. Then how bank takes care of such cases?": "1.He can maintain installments regularly through ur payment account. 2.He can maintain installments regularly through ur payment account.",
             "How does an Islamic mortgage work, given that Muslim clients are prohibited from taking out loans with interest?": "Through 3 ways: murabaha, ijara and musharaka 1.Murabaha, bank buys the property and sells to client on a pre-agreed profit. 2.Ijara, bank buys the property and lease it to client and client pays the monthly rental payment until its fully paid then ownership transfer.3.Musharaka, its like bank and client both buys the property on partnership and slowly client buys the shares of the bank."
         },
         ar: {
@@ -145,6 +161,15 @@ function populateDropdown(category) {
             dropdownEl.appendChild(option);
         }
     }
+    const select = document.getElementById("customQuestion");
+    select.innerHTML = ''; // Clear existing options
+    Object.entries(segmentedQuestions[category][selectedLanguage]).forEach(([q, _]) => {
+        const option = document.createElement("option");
+        option.value = q;
+        option.textContent = q.length > 100 ? q.slice(0, 97) + '...' : q;
+        option.title = q;
+        select.appendChild(option);
+    });
 }
 // Handle language change
 languageSelect.addEventListener('change', () => {
@@ -160,11 +185,12 @@ languageSelect.addEventListener('change', () => {
 const segments = document.querySelectorAll('.segment');
 segments.forEach(btn => {
     btn.addEventListener('click', () => {
-        segments.forEach(b => b.classList.remove('active')); // Remove 'active' class from all segments
-        btn.classList.add('active'); // Add 'active' class to the clicked segment
+        segments.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         const category = btn.getAttribute('data-category');
         populateDropdown(category); // Populate the dropdown based on selected category
         showQuestionSection(); // Always show the question section when a segment is clicked
+        showFaq();
     });
 });
 const defaultSegment = document.querySelector('.segment[data-category="mortgage"]');
@@ -173,6 +199,54 @@ if (defaultSegment) {
     populateDropdown('mortgage'); // Populate dropdown with default category
     showQuestionSection(); // Show the section for the default category
 }
+window.handleSegmentClick = (button) => {
+    const category = button.dataset.category;
+    const faq = document.getElementById("faq");
+    const faqTitle = document.getElementById("faq-title");
+    const faqContent = document.getElementById("faq-content");
+    faq.style.display = "block";
+    switch (category) {
+        case "mortgage":
+            faqTitle.textContent = "1. What is a mortgage?";
+            faqContent.innerHTML = `Dubai offers three main jurisdictions: <br> `;
+            break;
+        case "auto":
+            faqTitle.textContent = "1. What is an auto loan?";
+            faqContent.textContent = "An auto loan is a type of loan to finance the purchase of a vehicle. You borrow money from a lender and pay it back over time with interest.";
+            break;
+        case "company":
+            faqTitle.textContent = " FAQs";
+            faqContent.innerHTML = `1. What are the main types of business jurisdictions in Dubai?<br>
+          Dubai offers three main jurisdictions: <br> 
+          * Mainland (Onshore): Business can operate anywhere in the UAE and internationally. <br>
+          * Free Zone: Full ownership, but business limited within the Free Zone and internationally. <br>
+          * Offshore: Mainly for international business; no physical office required in Dubai. <br><br>
+          2. Can a foreigner own 100% of a company in Dubai?<br>
+          *Yes. As of 2021, foreigners can own 100% of mainland businesses in many sectors.<br>
+          *Free zones have always allowed 100% foreign ownership.<br> <br>
+          3. What are the most common legal structures?<br>
+          *LLC (Limited Liability Company) -Ideal for mainland businesses.<br>
+          *Free Zone Company (FZC or FZE) -Common in free zones.<br>
+          *Branch Office -For existing companies expanding into Dubai.<br>
+          *Sole Establishment -Owned by one individual.<br><br>
+          4. What documents are required to start a business in Dubai?<br>
+          Typical documents include:<br>
+          *Passport copies of shareholders/directors<br>
+          *Visa and Emirates ID (if resident)<br>
+          *Business plan (for some activities)<br>
+          *Trade name reservation<br>
+          *Initial approval from authorities<br>
+          *Lease agreement (Ejari)<br>`;
+            break;
+        case "general":
+            faqTitle.textContent = "1. What is ?";
+            faqContent.textContent = "An auto loan is a type of loan to finance the purchase of a vehicle. You borrow money from a lender and pay it back over time with interest.";
+            break;
+        default:
+            faqTitle.textContent = "";
+            faqContent.textContent = "";
+    }
+};
 // Start speech recognition
 let chunks = [];
 let currentChunkIndex = 0;
@@ -236,7 +310,6 @@ function startListening() {
     console.log("Recognition language:", recognition.lang);
     recognition.onresult = function (event) {
         const text = event.results[0][0].transcript;
-        transcriptEl.textContent = `You said: ${text}`;
         getGeminiResponse(text);
     };
 }
@@ -245,7 +318,6 @@ function askCustomQuestion() {
     const selected = dropdownEl.value;
     if (selected) {
         speechSynthesis.cancel();
-        transcriptEl.textContent = `You selected: ${selected}`;
         getGeminiResponse(selected);
     }
 }
@@ -265,9 +337,12 @@ async function getGeminiResponse(userText) {
         for (const q in questions) {
             if (userText.trim() === q.trim()) {
                 const reply = questions[q];
-                responseEl.textContent = `Assistant: ${reply}`;
                 speak(reply);
                 addToHistory(userText, reply);
+                async function getGeminiResponse(userText) {
+                    speechSynthesis.cancel();
+                    const lowerText = userText.toLowerCase();
+                }
                 return;
             }
         }
@@ -283,62 +358,20 @@ async function getGeminiResponse(userText) {
             }
         ]
     };
-    const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-    });
-    const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I didn't get that.";
-    responseEl.textContent = `Assistant: ${reply}`;
-    speak(reply);
-    addToHistory(userText, reply);
-    async function getGeminiResponse(userText) {
-        speechSynthesis.cancel();
-        const lowerText = userText.toLowerCase();
-        // Check for predefined answer
-        for (const category in segmentedQuestions) {
-            const questions = segmentedQuestions[category][selectedLanguage];
-            for (const q in questions) {
-                if (userText.trim() === q.trim()) {
-                    const reply = questions[q];
-                    responseEl.textContent = `Assistant: ${reply}`;
-                    speak(reply);
-                    addToHistory(userText, reply);
-                    return;
-                }
-            }
-        }
-        // Gemini API call if not found in segmented questions
-        const endpoint = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-        const requestBody = {
-            contents: [
-                {
-                    parts: [
-                        {
-                            text: "Answer concisely and precisely, like a helpful assistant. Only provide answers that are relevant to the UAE market. Do not include information unrelated to the UAE."
-                        },
-                        { text: userText }
-                    ]
-                }
-            ]
-        };
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody)
-            });
-            const data = await response.json();
-            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't find a suitable answer.";
-            responseEl.textContent = `Assistant: ${reply}`;
-            speak(reply);
-            addToHistory(userText, reply);
-        }
-        catch (error) {
-            console.error("Error fetching Gemini response:", error);
-            responseEl.textContent = "Sorry, something went wrong while fetching the response.";
-        }
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestBody)
+        });
+        const data = await response.json();
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't find a suitable answer.";
+        speak(reply);
+        addToHistory(userText, reply);
+    }
+    catch (error) {
+        console.error("Error fetching Gemini response:", error);
+        responseEl.textContent = "Sorry, something went wrong while fetching the response.";
     }
 }
 // Speak response text
